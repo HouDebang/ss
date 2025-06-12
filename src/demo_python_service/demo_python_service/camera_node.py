@@ -1,6 +1,7 @@
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
+from std_msgs.msg import Float32
 from cv_bridge import CvBridge
 import cv2
 from chapt4_interfaces.srv import FaceDetector
@@ -28,9 +29,23 @@ class CameraNode(Node):
         if not self.face_detect_client.wait_for_service(timeout_sec=10.0):
             self.get_logger().error('人脸检测服务在10秒内未启动，请确保face_detect_node正在运行')
             return
+
+       # 添加激光传感器数据的订阅者
+        self.laser_subscriber = self.create_subscription(
+            Float32,
+            'laserdata_topic',  # 订阅激光传感器的话题
+            self.laser_callback,
+            10)
+        self.current_distance = None  # 存储当前距离值
+        self.get_logger().info('已订阅激光传感器数据')
         
         self.get_logger().info('摄像头节点已启动，开始处理')
         self.is_processing = False  # 添加标志位避免重复处理
+
+    def laser_callback(self, msg):
+        """存储最新的激光传感器距离数据"""
+        self.current_distance = msg.data
+        self.get_logger().debug(f'收到激光距离数据: {msg.data}')
 
     def timer_callback(self):
         if self.is_processing:
@@ -80,7 +95,12 @@ class CameraNode(Node):
                 bottom = response.bottle[i]
                 left = response.left[i]
                 cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
-            
+
+            if self.current_distance is not None:
+                distance_text = f'Distance: {self.current_distance:.2f} cm'
+                cv2.putText(frame, distance_text, (10, 70), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+
             # 显示检测结果
             cv2.imshow('Face Detection', frame)
             key = cv2.waitKey(1)
@@ -88,7 +108,7 @@ class CameraNode(Node):
                 self.get_logger().info('用户按下q键，准备退出...')
                 rclpy.shutdown()
             
-            self.get_logger().info(f'检测到 {response.number} 个人脸，用时: {response.use_time:.2f} 秒')
+            self.get_logger().info(f'检测到 {response.number} 个人脸，用时: {response.use_time:.2f} 秒,距离: {self.current_distance} cm')
             
         except Exception as e:
             self.get_logger().error(f'处理人脸检测结果时出错: {str(e)}')
