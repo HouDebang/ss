@@ -9,7 +9,21 @@
 
   <depend>rclpy</depend>
   <depend>chapt4_interfaces</depend>
-
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>ament_index_python</depend>
+  <depend>rclcpp</depend>
+  
+  <!-- OpenCV 依赖（通常通过系统安装） -->
+  <exec_depend>python3-opencv</exec_depend>
+  
+  <!-- 人脸识别库（如果使用） -->
+  <exec_depend>python3-face_recognition</exec_depend>
+  
+  <!-- 串口通信依赖（用于激光传感器） -->
+  <exec_depend>python3-pyserial</exec_depend>
+  
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
