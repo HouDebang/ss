@@ -96,11 +96,29 @@ class CameraNode(Node):
                 left = response.left[i]
                 cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
 
-            if self.current_distance is not None:
+                if i == 0 and self.current_distance is not None:
+                    # 在人脸框上方显示距离信息
+                    distance_text = f'Distance: {self.current_distance:.2f} cm'
+                    text_position = (left, top - 10)  # 在框上方10像素处显示
+                    
+                    # 确保文本不会超出图像顶部
+                    if text_position[1] < 20:
+                        text_position = (left, bottom + 30)  # 如果太靠近顶部，改在框下方显示
+                    
+                    cv2.putText(frame, distance_text, text_position, 
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+            
+            # 添加人脸数量信息
+            face_count_text = f'Faces: {response.number}'
+            cv2.putText(frame, face_count_text, (10, 30), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
+            
+            # 如果没有人脸但有距离信息，在左上角显示距离
+            if response.number == 0 and self.current_distance is not None:
                 distance_text = f'Distance: {self.current_distance:.2f} cm'
                 cv2.putText(frame, distance_text, (10, 70), 
                             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-
+            
             # 显示检测结果
             cv2.imshow('Face Detection', frame)
             key = cv2.waitKey(1)
