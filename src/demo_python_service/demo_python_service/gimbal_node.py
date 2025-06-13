@@ -16,8 +16,10 @@ class GimbalControlNode(Node):
         )
         self.get_logger().info("云台控制节点已启动")
         # 云台控制参数
-        self.dead_zone = 20  # 中心死区像素大小
+        self.dead_zone = 5  # 中心死区像素大小
         self.kp = 0.1  # 比例控制系数
+        self.ki= 0.01
+        self.kd = 0.02
          # ... 新增PID状态变量
         self.integral_x = 0.0
         self.integral_y = 0.0
@@ -58,21 +60,18 @@ class GimbalControlNode(Node):
         derivative_x = (offset_x - self.prev_error_x) / self.control_period
         derivative_y = (offset_y - self.prev_error_y) / self.control_period
         
-        angle_x = -(self.kp * offset_x + self.ki * self.integral_x + self.kd * derivative_x)
-        angle_y = -(self.kp * offset_y + self.ki * self.integral_y + self.kd * derivative_y)
+        angle_x = self.kp * offset_x + self.ki * self.integral_x + self.kd * derivative_x
+        angle_y = self.kp * offset_y + self.ki * self.integral_y + self.kd * derivative_y
         self.prev_error_x, self.prev_error_y = offset_x, offset_y
         # 检查是否在死区内
         if abs(offset_x) < self.dead_zone and abs(offset_y) < self.dead_zone:
             return  # 人脸已在中心区域，无需调整
         self.get_logger().info(f"人脸位于死区内 (X:{offset_x:.1f}, Y:{offset_y:.1f})，不调整")
         # 计算云台需要调整的角度
-        # 角度与偏移量成比例关系
-        angle_x = offset_x * self.kp  # 水平方向调整
-        angle_y = offset_y * self.kp  # 垂直方向调整
         
         # 限制角度范围
-        angle_x = max(min(angle_x, 30), -30)  # ±30度限制
-        angle_y = max(min(angle_y, 30), -30)  # ±30度限制
+        angle_x = max(min(angle_x, 180), -180)  # ±30度限制
+        angle_y = max(min(angle_y, 90), -60)  # ±30度限制
         
         self.get_logger().info(
             f"人脸中心: ({face_center_x:.1f}, {face_center_y:.1f}) | "

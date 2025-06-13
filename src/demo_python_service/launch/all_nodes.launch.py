@@ -20,7 +20,7 @@ def generate_launch_description():
     
     gimbal_dead_zone_arg = DeclareLaunchArgument(
         'gimbal_dead_zone',
-        default_value='30',
+        default_value='10',
         description='云台控制死区像素大小'
     )
     
@@ -79,23 +79,4 @@ def generate_launch_description():
                 'display_window': True
             }]
         ),
-        
-        # 新增云台控制节点
-        Node(
-            package='demo_python_service',
-            executable='gimbal_node',  # 假设可执行文件名为gimbal_node
-            name='gimbal_control_node',
-            output='screen',
-            parameters=[{
-                'serial_port': LaunchConfiguration('gimbal_serial_port'),
-                'baud_rate': LaunchConfiguration('gimbal_baud_rate'),
-                'dead_zone': LaunchConfiguration('gimbal_dead_zone'),
-                'kp': LaunchConfiguration('gimbal_kp'),
-                # 添加更多参数
-                'image_width': 640,  # 默认图像宽度
-                'image_height': 480,  # 默认图像高度
-                'max_angle': 30.0,   # 最大角度限制
-            }],
-            arguments=['--ros-args', '--log-level', 'info']  # 设置日志级别
-        )
     ])
