@@ -9,7 +9,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>sensor_messages</depend>
+  <depend>sensor_msgs</depend>  <!-- Fixed from 'sensor_messages' -->
   <depend>rosidl_default_generators</depend>
   <member_of_group>rosidl_interface_packages</member_of_group>
 

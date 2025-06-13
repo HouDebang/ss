@@ -31,6 +31,8 @@ class FaceDetectNode(Node):
     def face_detect_callback(self, request, response):
         if request.image.data:
             cv_image = self.bridge.imgmsg_to_cv2(request.image)
+            height, width = cv_image.shape[:2]
+            self.get_logger().info(f"Received image with size {width}x{height}")
         else:
             cv_image = cv2.imread(self.default_image_path)
             self.get_logger().info("No image received, using default image")
@@ -52,7 +54,10 @@ class FaceDetectNode(Node):
         position_msg.bottom = response.bottom  # 修正变量名
         position_msg.left = response.left
         position_msg.use_time = time.time()-start_time
-        
+        position_msg.image_width = width
+        position_msg.image_height = height
+
+
         self.position_publisher.publish(position_msg)
         self.get_logger().info(f"已发布人脸位置信息：检测到 {response.number} 个人脸")
         return response
