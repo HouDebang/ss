@@ -15,6 +15,8 @@ import time
 class FaceDetectNode(Node):
     def __init__(self):
         super().__init__('face_detect_node')
+        self.prev_face_positions = []  # 存储历史位置
+        self.smoothing_window = 3  # 平滑窗口
         self.srv = self.create_service(FaceDetector, 'face_detect', self.face_detect_callback)
         self.position_publisher = self.create_publisher(
             FacePosition, 
@@ -56,8 +58,6 @@ class FaceDetectNode(Node):
         position_msg.use_time = time.time()-start_time
         position_msg.image_width = width
         position_msg.image_height = height
-
-
         self.position_publisher.publish(position_msg)
         self.get_logger().info(f"已发布人脸位置信息：检测到 {response.number} 个人脸")
         return response

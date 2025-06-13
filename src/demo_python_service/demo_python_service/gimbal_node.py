@@ -15,11 +15,15 @@ class GimbalControlNode(Node):
             10
         )
         self.get_logger().info("云台控制节点已启动")
-        
         # 云台控制参数
         self.dead_zone = 20  # 中心死区像素大小
         self.kp = 0.1  # 比例控制系数
-        
+         # ... 新增PID状态变量
+        self.integral_x = 0.0
+        self.integral_y = 0.0
+        self.prev_error_x = 0.0
+        self.prev_error_y = 0.0
+        self.control_period = 0.1  # 与摄像头频率匹配
         # 初始化云台串口连接
         try:
             self.ser = serial.Serial('/dev/base_controller', 115200, timeout=1)
@@ -49,7 +53,14 @@ class GimbalControlNode(Node):
         # 计算与图像中心的偏移
         offset_x = face_center_x - (image_width / 2)
         offset_y = face_center_y - (image_height / 2)
+        self.integral_x += offset_x * self.control_period
+        self.integral_y += offset_y * self.control_period
+        derivative_x = (offset_x - self.prev_error_x) / self.control_period
+        derivative_y = (offset_y - self.prev_error_y) / self.control_period
         
+        angle_x = -(self.kp * offset_x + self.ki * self.integral_x + self.kd * derivative_x)
+        angle_y = -(self.kp * offset_y + self.ki * self.integral_y + self.kd * derivative_y)
+        self.prev_error_x, self.prev_error_y = offset_x, offset_y
         # 检查是否在死区内
         if abs(offset_x) < self.dead_zone and abs(offset_y) < self.dead_zone:
             return  # 人脸已在中心区域，无需调整

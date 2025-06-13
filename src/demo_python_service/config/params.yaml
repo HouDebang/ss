@@ -1,0 +1,19 @@
+/camera_node:
+  ros__parameters:
+    capture_frequency: 10.0  # Hz
+    display_enabled: true
+/face_detect_node:
+  ros__parameters:
+    detection_model: "hog"  # 可选 "cnn"
+    upsample_times: 1
+/gimbal_node:
+  ros__parameters:
+    dead_zone: 20
+    kp: 0.1
+    ki: 0.01
+    kd: 0.02
+    serial_port: "COM3"
+/lasersensor_publisher_node:
+  ros__parameters:
+    publish_frequency: 20.0  # Hz
+    filter_window: 5  # 滑动平均窗口大小
