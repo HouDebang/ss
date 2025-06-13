@@ -14,7 +14,7 @@
   <depend>cv_bridge</depend>
   <depend>ament_index_python</depend>
   <depend>rclcpp</depend>
-  
+  <exec_depend>launch</exec_depend>  
   <!-- OpenCV 依赖（通常通过系统安装） -->
   <exec_depend>python3-opencv</exec_depend>
   

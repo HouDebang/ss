@@ -1,3 +1,5 @@
+import os
+from glob import glob
 from setuptools import find_packages, setup
 
 package_name = 'demo_python_service'
@@ -10,6 +12,8 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+    # 添加这行来安装 launch 文件
+        (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
         ('share/' + package_name+"/resource",['resource/default.jpg','resource/test1.png']),
     ],
     # Add face_recognition to required dependencies
