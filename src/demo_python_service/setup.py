@@ -30,6 +30,7 @@ setup(
             'face_detect_node = demo_python_service.face_detect_node:main',
             'lasersensor_publisher_node = demo_python_service.lasersensor_publisher_node:main',
             'camera_node = demo_python_service.camera_node:main',  # 添加摄像头节点
+            'gimbal_node = demo_python_service.gimbal_node:main'
         ],
     },
 )

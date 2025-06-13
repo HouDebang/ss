@@ -92,7 +92,7 @@ class CameraNode(Node):
             for i in range(response.number):
                 top = response.top[i]
                 right = response.right[i]
-                bottom = response.bottle[i]
+                bottom = response.bottom[i]
                 left = response.left[i]
                 cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
 
