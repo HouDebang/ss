@@ -1,55 +1,104 @@
+#!/usr/bin/env python3
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
-import os
 import sys
-sys.path.append(os.path.expanduser("~/face_recognition_evn/lib/python3.12/site-packages"))
-from pynput import keyboard
+import select
+import termios
+import tty
 
-# 按键与速度映射
-KEY_BINDINGS = {
-    'w': (0.2, 0.0),   # 前进
-    's': (-0.2, 0.0),  # 后退
-    'a': (0.0, 0.5),   # 左转
-    'd': (0.0, -0.5),  # 右转
-    'q': (0.0, 0.0),   # 停止
-}
-
-class KeyboardControlNode(Node):
+class KeyboardListener(Node):
     def __init__(self):
-        super().__init__('keyboard_control_node')
-        self.publisher_ = self.create_publisher(Twist, '/cmd_vel', 10)
-        print("按WASD控制小车，Q停止，ESC退出。")
-
-    def on_press(self, key):
-        try:
-            k = key.char.lower()
-        except AttributeError:
+        super().__init__('keyboard_listener')
+        self.publisher = self.create_publisher(Twist, '/cmd_vel', 10)
+        
+        # 速度参数
+        self.linear_velocity = 0.0
+        self.angular_velocity = 0.0
+        self.velocity_step = 0.1
+        self.max_linear_velocity = 1.0
+        
+        # 保存终端设置
+        self.old_attr = termios.tcgetattr(sys.stdin)
+        
+        self.get_logger().info("键盘控制已启动 (WASD控制方向, 空格停止, Q退出)")
+        self.get_logger().info("速度参数: 线性: {:.1f} m/s, 角速度: {:.1f} rad/s".format(
+            self.linear_velocity, self.angular_velocity
+        ))
+        
+        # 定时器用于发布速度
+        self.timer = self.create_timer(0.1, self.publish_velocity)
+    
+    def get_key(self):
+        """获取键盘输入"""
+        tty.setraw(sys.stdin.fileno())
+        rlist, _, _ = select.select([sys.stdin], [], [], 0.1)
+        if rlist:
+            key = sys.stdin.read(1)
+        else:
+            key = ''
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.old_attr)
+        return key
+    
+    def publish_velocity(self):
+        """处理键盘输入并发布速度指令"""
+        key = self.get_key()
+        
+        if key == 'q' or key == 'Q':
+            self.cleanup()
+            rclpy.shutdown()
             return
-        if k in KEY_BINDINGS:
-            linear, angular = KEY_BINDINGS[k]
-            twist = Twist()
-            twist.linear.x = linear
-            twist.angular.z = angular
-            self.publisher_.publish(twist)
-            print(f"按下{k.upper()}，线速度: {linear}, 角速度: {angular}")
-        if k == '\x1b':  # ESC退出
-            print("退出键盘控制。"); return False
-
-    def run(self):
-        with keyboard.Listener(on_press=self.on_press) as listener:
-            listener.join()
+        
+        # 处理运动控制命令
+        if key == 'w':
+            self.linear_velocity = min(self.linear_velocity + self.velocity_step, 
+                                      self.max_linear_velocity)
+        elif key == 's':
+            self.linear_velocity = max(self.linear_velocity - self.velocity_step, 
+                                      -self.max_linear_velocity)
+        elif key == 'a':
+            self.angular_velocity = min(self.angular_velocity + self.velocity_step, 
+                                      self.max_linear_velocity)
+        elif key == 'd':
+            self.angular_velocity = max(self.angular_velocity - self.velocity_step, 
+                                      -self.max_linear_velocity)
+        elif key == ' ':
+            self.linear_velocity = 0.0
+            self.angular_velocity = 0.0
+        
+        # 显示当前速度
+        if key in ['w', 's', 'a', 'd', ' ']:
+            self.get_logger().info("速度参数: 线性: {:.1f} m/s, 角速度: {:.1f} rad/s".format(
+                self.linear_velocity, self.angular_velocity
+            ))
+        
+        # 发布速度指令
+        twist_msg = Twist()
+        twist_msg.linear.x = self.linear_velocity
+        twist_msg.angular.z = self.angular_velocity
+        self.publisher.publish(twist_msg)
+    
+    def cleanup(self):
+        """清理资源"""
+        self.get_logger().info("正在关闭键盘监听节点...")
+        # 发布停止指令
+        stop_msg = Twist()
+        self.publisher.publish(stop_msg)
+        # 恢复终端设置
+        termios.tcsetattr(sys.stdin, termios.TCSADRAIN, self.old_attr)
 
 def main(args=None):
     rclpy.init(args=args)
-    node = KeyboardControlNode()
+    node = KeyboardListener()
+    
     try:
-        node.run()
+        rclpy.spin(node)
     except KeyboardInterrupt:
-        print("退出键盘控制。")
+        pass
     finally:
+        node.cleanup()
         node.destroy_node()
         rclpy.shutdown()
 
-if __name__ == "__main__":
-    main() 
+if __name__ == '__main__':
+    main()
