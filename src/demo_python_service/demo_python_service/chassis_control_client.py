@@ -34,29 +34,31 @@ class ChassisSerialClient:
             def error(msg):
                 print(f"[ERROR] {msg}")
         return Logger()
-    def send_goal(self, linear_velocity, angular_velocity, duration):
-        """发送底盘控制命令到串口"""
-        if ser is None or not ser.is_open:
-            self.get_logger().error("串口未连接，无法发送命令")
-            return
+    def send_goal(self, left_speed, right_speed):
+            """发送底盘控制命令到串口
+            left_speed: 左侧轮速度(m/s)，范围-0.5~0.5
+            right_speed: 右侧轮速度(m/s)，范围-0.5~0.5
+            """
+            if ser is None or not ser.is_open:
+                self.get_logger().error("串口未连接，无法发送命令")
+                return
 
-        # 构造底盘控制JSON命令
-        cmd = {
-            "T": 123,  # 假设123是底盘控制命令类型
-            "linear": linear_velocity,
-            "angular": angular_velocity,
-            "duration": duration
-        }
+            # 根据UGV02指令集，使用CMD_SPEED_CTRL命令(T=1)
+            cmd = {
+                "T": 1,  # 左右轮速度控制指令
+                "L": left_speed,  # 左侧轮速度(m/s)
+                "R": right_speed  # 右侧轮速度(m/s)
+            }
+            # 限制速度在有效范围内(-0.5 ~ +0.5)
+            cmd["L"] = max(min(cmd["L"], 0.5), -0.5)
+            cmd["R"] = max(min(cmd["R"], 0.5), -0.5)
 
-        try:
-            command_str = json.dumps(cmd) + "\n"
-            ser.write(command_str.encode('utf-8'))
-            self.get_logger().info(f"已发送命令: {command_str.strip()}")
-            # 等待命令执行完成
-            time.sleep(duration)
-            self.get_logger().info("命令执行完成")
-        except Exception as e:
-            self.get_logger().error(f"发送命令失败: {str(e)}")
+            try:
+                command_str = json.dumps(cmd) + "\n"
+                ser.write(command_str.encode('utf-8'))
+                self.get_logger().info(f"已发送命令: {command_str.strip()}")
+            except Exception as e:
+                self.get_logger().error(f"发送命令失败: {str(e)}")
     def read_serial(self):
         """读取串口数据的线程函数"""
         while True:
@@ -79,7 +81,8 @@ def main():
         # 创建底盘串口客户端，使用指定的串口名称
         client = ChassisSerialClient("/dev/car_controller")
         # 示例：控制机器人以 0.1 m/s 的线速度，0 rad/s 的角速度移动 10 秒
-        client.send_goal(0.1, 0.0, 10.0)
+        # 示例：控制机器人前进（左右轮速度均为0.1m/s）
+            client.send_goal(0.1, 0.1)
     except Exception as e:
         print(f"程序异常退出: {str(e)}")
     finally:
