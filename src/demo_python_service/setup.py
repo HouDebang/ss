@@ -38,6 +38,7 @@ setup(
             'gimbal_node = demo_python_service.gimbal_node:main',
             'chassis_control_clint= demo_python_service.chassis_control_client:main',
             'chassis_control_server= demo_python_service.chassis_control_server:main',
+            'keyboard_control_node = demo_python_service.keyboard_control_node:main',
         ],
     },
 )

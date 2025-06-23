@@ -20,6 +20,7 @@
   
   <!-- 人脸识别库（如果使用） -->
   <exec_depend>python3-face_recognition</exec_depend>
+  <exec_depend>python3-pynput</exec_depend>
   
   <!-- 串口通信依赖（用于激光传感器） -->
   <exec_depend>python3-pyserial</exec_depend>

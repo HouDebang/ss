@@ -1,4 +1,7 @@
 import time
+import sys
+import os
+sys.path.append(os.path.expanduser("~/face_recognition_evn/lib/python3.12/site-packages"))
 from pynput import keyboard
 from chassis_control_client import ChassisSerialClient
 
