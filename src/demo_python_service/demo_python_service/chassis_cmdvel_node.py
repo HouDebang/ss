@@ -21,7 +21,7 @@ class SerialController(Node):
             self.ser = serial.Serial(
                 port=port,
                 baudrate=baudrate,
-                dsrdtr=None
+                timeout=1
             )
             self.ser.setRTS(False)
             self.ser.setDTR(False)
@@ -47,17 +47,21 @@ class SerialController(Node):
     
     def cmd_vel_callback(self, msg):
         """处理速度指令消息"""
-        # 构造JSON命令
-        command = {
-            'linear': msg.linear.x,
-            'angular': msg.angular.z
-        }
-        json_command = json.dumps(command) + '\n'
+        # 差速模型转换，左右轮速度，单位m/s，范围-0.5~0.5
+        left_speed = max(min(msg.linear.x - msg.angular.z, 0.5), -0.5)
+        right_speed = max(min(msg.linear.x + msg.angular.z, 0.5), -0.5)
+        # 推荐：CMD_SPEED_CTRL 指令
+        cmd = {"T": 1, "L": left_speed, "R": right_speed}
+        # # 如需使用CMD_ROS_CTRL指令（T=13），请注释上面一行，取消下面三行注释：
+        # cmd = {"T": 13, "X": msg.linear.x, "Z": msg.angular.z}
+        # # 或PWM控制（T=11），请自行映射速度到PWM值
+        # # cmd = {"T": 11, "L": int(left_speed * 255 / 0.5), "R": int(right_speed * 255 / 0.5)}
+        command_str = json.dumps(cmd) + "\n"
         
         # 发送到串口
         try:
-            self.ser.write(json_command.encode())
-            self.get_logger().debug(f"Sent: {json_command.strip()}")
+            self.ser.write(command_str.encode('utf-8'))
+            self.get_logger().info(f"串口已发送: {command_str.strip()}")
         except Exception as e:
             self.get_logger().error(f"串口写入错误: {e}")
     
@@ -66,8 +70,8 @@ class SerialController(Node):
         while rclpy.ok():
             try:
                 if self.ser.in_waiting:
-                    data = self.ser.readline().decode('latin-1').strip()
-                    self.get_logger().info(f"Received: {data}")
+                    data = self.ser.readline().decode('utf-8', errors='ignore').strip()
+                    self.get_logger().info(f"串口收到: {data}")
             except Exception as e:
                 self.get_logger().error(f"串口读取错误: {e}")
                 break
