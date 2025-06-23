@@ -1,49 +1,91 @@
 #!/usr/bin/env python3 
-import rclpy
-from rclpy.node import Node 
-from rclpy.action import ActionClient 
+import serial
+import argparse
+import threading
+import time
 import json
-#  导入自定义动作接口
-from chapt4_interfaces.action import ChassisControl
-class ChassisActionClient(Node): 
-    def __init__(self): 
-        super().__init__('chassis_action_client') 
-        self._action_client = ActionClient(self, ChassisControl, 'chassis_control')
-    def send_goal(self, ip_address, linear_velocity, angular_velocity, duration): 
-        goal_msg = ChassisControl.Goal() 
-        goal_msg.ip_address = ip_address 
-        goal_msg.linear_velocity = linear_velocity 
-        goal_msg.angular_velocity = angular_velocity 
-        goal_msg.duration = duration
-        self.get_logger().info("Waiting for action server...") 
-        self._action_client.wait_for_server() 
-        self.get_logger().info("Action server available. Sending goal...")
-        send_goal_future = self._action_client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
-        send_goal_future.add_done_callback(self.goal_response_callback)
-    #执行过程中的回调
-    def feedback_callback(self, feedback_msg): 
-        feedback = feedback_msg.feedback 
-        self.get_logger().info(f"Feedback: Distance travelled = {feedback.distance_travelled:.2f} m")
-    #收到回应后的回调
-    def goal_response_callback(self, future): 
-        goal_handle = future.result() 
-        if not goal_handle.accepted: 
-            self.get_logger().info("Goal rejected.") 
-            return 
-        self.get_logger().info("Goal accepted. Waiting for result...")
-        get_result_future = goal_handle.get_result_async()
-        get_result_future.add_done_callback(self.get_result_callback)
-    #执行完成后的回调
-    def get_result_callback(self, future): 
-        result = future.result().result 
-        self.get_logger().info(f"Result received: success = {result.success}, message: {result.message}") 
-        rclpy.shutdown()
 
-def main(args=None): 
-    rclpy.init(args=args) 
-    client = ChassisActionClient() 
-    # 示例目标：控制机器人以 0.1 m/s 的线速度，0 rad/s 的角速度移动 10 秒，目标 IP 为 192.168.4.1 
-    client.send_goal("192.168.4.1", 0.1, 0.0, 10.0) 
-    rclpy.spin(client) 
+# 用于控制接收线程是否输出
+print_lock = threading.Lock()
+ser = None
+
+class ChassisSerialClient:
+    def __init__(self, port):
+        global ser
+        try:
+            ser = serial.Serial(port, baudrate=115200, timeout=1)
+            ser.setRTS(False)
+            ser.setDTR(False)
+            self.get_logger().info(f"串口 {port} 连接成功")
+            # 启动接收线程
+            self.recv_thread = threading.Thread(target=self.read_serial)
+            self.recv_thread.daemon = True
+            self.recv_thread.start()
+        except serial.SerialException as e:
+            self.get_logger().error(f"无法打开串口 {port}: {e}")
+            raise
+
+    def get_logger(self):
+        class Logger:
+            @staticmethod
+            def info(msg):
+                print(f"[INFO] {msg}")
+            @staticmethod
+            def error(msg):
+                print(f"[ERROR] {msg}")
+        return Logger()
+    def send_goal(self, linear_velocity, angular_velocity, duration):
+        """发送底盘控制命令到串口"""
+        if ser is None or not ser.is_open:
+            self.get_logger().error("串口未连接，无法发送命令")
+            return
+
+        # 构造底盘控制JSON命令
+        cmd = {
+            "T": 123,  # 假设123是底盘控制命令类型
+            "linear": linear_velocity,
+            "angular": angular_velocity,
+            "duration": duration
+        }
+
+        try:
+            command_str = json.dumps(cmd) + "\n"
+            ser.write(command_str.encode('utf-8'))
+            self.get_logger().info(f"已发送命令: {command_str.strip()}")
+            # 等待命令执行完成
+            time.sleep(duration)
+            self.get_logger().info("命令执行完成")
+        except Exception as e:
+            self.get_logger().error(f"发送命令失败: {str(e)}")
+    def read_serial(self):
+        """读取串口数据的线程函数"""
+        while True:
+            try:
+                with print_lock:
+                    data = ser.readline().decode('utf-8').strip()
+                    if data:
+                        try:
+                            # 解析JSON格式的反馈数据
+                            feedback = json.loads(data)
+                            self.get_logger().info(f"收到反馈: 距离={feedback.get('distance', 0):.2f}m, 状态={feedback.get('status', 'unknown')}")
+                        except json.JSONDecodeError:
+                            self.get_logger().info(f"收到数据: {data}")
+            except Exception as e:
+                self.get_logger().error(f"串口读取错误: {str(e)}")
+                break
+
+def main(): 
+    try:
+        # 创建底盘串口客户端，使用指定的串口名称
+        client = ChassisSerialClient("/dev/car_controller")
+        # 示例：控制机器人以 0.1 m/s 的线速度，0 rad/s 的角速度移动 10 秒
+        client.send_goal(0.1, 0.0, 10.0)
+    except Exception as e:
+        print(f"程序异常退出: {str(e)}")
+    finally:
+        if ser and ser.is_open:
+            ser.close()
+            print("串口已关闭")
+
 if __name__ == '__main__': 
     main()
