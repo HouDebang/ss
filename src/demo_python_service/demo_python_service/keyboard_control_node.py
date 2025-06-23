@@ -1,6 +1,9 @@
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist
+import os
+import sys
+sys.path.append(os.path.expanduser("~/face_recognition_evn/lib/python3.12/site-packages"))
 from pynput import keyboard
 
 # 按键与速度映射
