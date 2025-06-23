@@ -1,23 +1,21 @@
-import time
-import sys
-import os
-sys.path.append(os.path.expanduser("~/face_recognition_evn/lib/python3.12/site-packages"))
+import rclpy
+from rclpy.node import Node
+from geometry_msgs.msg import Twist
 from pynput import keyboard
-from chassis_control_client import ChassisSerialClient
 
 # 按键与速度映射
 KEY_BINDINGS = {
-    'w': (0.2, 0.2),   # 前进
-    's': (-0.2, -0.2), # 后退
-    'a': (-0.1, 0.1),  # 左转
-    'd': (0.1, -0.1),  # 右转
+    'w': (0.2, 0.0),   # 前进
+    's': (-0.2, 0.0),  # 后退
+    'a': (0.0, 0.5),   # 左转
+    'd': (0.0, -0.5),  # 右转
     'q': (0.0, 0.0),   # 停止
 }
 
-class KeyboardControl:
-    def __init__(self, port="/dev/car_controller"):
-        self.client = ChassisSerialClient(port)
-        self.last_cmd = (0.0, 0.0)
+class KeyboardControlNode(Node):
+    def __init__(self):
+        super().__init__('keyboard_control_node')
+        self.publisher_ = self.create_publisher(Twist, '/cmd_vel', 10)
         print("按WASD控制小车，Q停止，ESC退出。")
 
     def on_press(self, key):
@@ -26,26 +24,29 @@ class KeyboardControl:
         except AttributeError:
             return
         if k in KEY_BINDINGS:
-            speeds = KEY_BINDINGS[k]
-            self.client.send_goal(*speeds)
-            self.last_cmd = speeds
-            print(f"按下{k.upper()}，速度: {speeds}")
-        if k == 'q':
-            print("已停止小车。")
+            linear, angular = KEY_BINDINGS[k]
+            twist = Twist()
+            twist.linear.x = linear
+            twist.angular.z = angular
+            self.publisher_.publish(twist)
+            print(f"按下{k.upper()}，线速度: {linear}, 角速度: {angular}")
         if k == '\x1b':  # ESC退出
-            print("退出键盘控制。")
-            return False
+            print("退出键盘控制。"); return False
 
     def run(self):
         with keyboard.Listener(on_press=self.on_press) as listener:
             listener.join()
 
-if __name__ == "__main__":
-    ctrl = KeyboardControl()
+def main(args=None):
+    rclpy.init(args=args)
+    node = KeyboardControlNode()
     try:
-        ctrl.run()
+        node.run()
     except KeyboardInterrupt:
         print("退出键盘控制。")
     finally:
-        # 停止小车
-        ctrl.client.send_goal(0.0, 0.0) 
+        node.destroy_node()
+        rclpy.shutdown()
+
+if __name__ == "__main__":
+    main() 
