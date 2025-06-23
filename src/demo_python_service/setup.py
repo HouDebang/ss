@@ -17,7 +17,12 @@ setup(
         ('share/' + package_name+"/resource",['resource/default.jpg','resource/test1.png']),
     ],
     # Add face_recognition to required dependencies
-    install_requires=['setuptools', 'face_recognition', 'opencv-python'],  # 添加 opencv-python 依赖
+    install_requires=[
+        'setuptools',
+        'face_recognition',
+        'opencv-python',
+        'pynput',
+    ],  # 添加 opencv-python 依赖
     zip_safe=True,
     maintainer='ws',
     maintainer_email='ws@todo.todo',
