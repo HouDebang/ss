@@ -1,22 +1,22 @@
 #!/usr/bin/env python3 
-import rclpy from rclpy.node 
-import Node from rclpy.action 
-import ActionServer 
+import rclpy 
+from rclpy.node import Node 
+from rclpy.action import ActionServer 
 import json 
 import requests 
 import time 
 # 导入自定义动作接口
-from custom_interface.action import ChassisControl
+from chapt4_interfaces.action import ChassisControl
 class ChassisActionServer(Node): 
     def __init__(self): 
         super().__init__('chassis_action_server')
-    self._action_server = ActionServer( 
-        self,
-        ChassisControl, 
-        'chassis_control', 
-        self.execute_callback 
-        )
-    self.get_logger().info("Chassis Action Server started.")
+        self._action_server = ActionServer( 
+            self,
+            ChassisControl, 
+            'chassis_control', 
+            self.execute_callback 
+            )
+        self.get_logger().info("Chassis Action Server started.")
 
     async def execute_callback(self, goal_handle):
         #接收到的请求
@@ -45,7 +45,8 @@ class ChassisActionServer(Node):
                 goal_handle.abort() 
                 return ChassisControl.Result(success=False, message="HTTP command failed") 
                 #时间反馈
-            time.sleep(segment_time) total_distance += abs(linear_velocity) * segment_time
+            time.sleep(segment_time) 
+            total_distance += abs(linear_velocity) * segment_time
             feedback = ChassisControl.Feedback() 
             feedback.distance_travelled = total_distance 
             goal_handle.publish_feedback(feedback)
@@ -56,20 +57,20 @@ class ChassisActionServer(Node):
             try: 
                 response = requests.get(url, timeout=1) 
                 self.get_logger().info("Sent command, response: " + response.text) 
-                except Exception as e: 
-                    self.get_logger().error("HTTP command failed: " + str(e)) 
-                    goal_handle.abort()
-                    return ChassisControl.Result(success=False, message="HTTP command failed")
-                time.sleep(remaining) 
-                total_distance += abs(linear_velocity) * remaining 
-                feedback = ChassisControl.Feedback() 
-                feedback.distance_travelled = total_distance 
-                goal_handle.publish_feedback(feedback) 
-            goal_handle.succeed()
-            result = ChassisControl.Result()
-            result.success = True 
-            result.message = f"Movement executed. Total distance travelled: {total_distance:.2f} m." 
-            return result
+            except Exception as e: 
+                self.get_logger().error("HTTP command failed: " + str(e)) 
+                goal_handle.abort()
+                return ChassisControl.Result(success=False, message="HTTP command failed")
+            time.sleep(remaining) 
+            total_distance += abs(linear_velocity) * remaining 
+            feedback = ChassisControl.Feedback() 
+            feedback.distance_travelled = total_distance 
+            goal_handle.publish_feedback(feedback) 
+        goal_handle.succeed()
+        result = ChassisControl.Result()
+        result.success = True 
+        result.message = f"Movement executed. Total distance travelled: {total_distance:.2f} m." 
+        return result
 def main(args=None): 
     rclpy.init(args=args) 
     node = ChassisActionServer() 

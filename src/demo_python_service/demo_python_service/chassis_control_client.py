@@ -4,7 +4,7 @@ from rclpy.node import Node
 from rclpy.action import ActionClient 
 import json
 #  导入自定义动作接口
-from custom_interface.action import ChassisControl
+from chapt4_interfaces.action import ChassisControl
 class ChassisActionClient(Node): 
     def __init__(self): 
         super().__init__('chassis_action_client') 

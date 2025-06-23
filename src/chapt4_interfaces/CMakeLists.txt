@@ -13,6 +13,7 @@ find_package(rosidl_default_generators REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/FaceDetector.srv"
   "msg/FacePosition.msg"
+  "action/ChassisControl.action"
   DEPENDENCIES sensor_msgs
 )
 
