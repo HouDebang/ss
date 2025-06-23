@@ -82,7 +82,7 @@ def main():
         client = ChassisSerialClient("/dev/car_controller")
         # 示例：控制机器人以 0.1 m/s 的线速度，0 rad/s 的角速度移动 10 秒
         # 示例：控制机器人前进（左右轮速度均为0.1m/s）
-            client.send_goal(0.1, 0.1)
+        client.send_goal(0.1, 0.1)
     except Exception as e:
         print(f"程序异常退出: {str(e)}")
     finally:
