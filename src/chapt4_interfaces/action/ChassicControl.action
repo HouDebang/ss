@@ -1,0 +1,13 @@
+# ChassisControl.action
+# Goal 部分 
+float32 linear_velocity    # 移动线速度 (m/s) 
+float32 angular_velocity # 转向角速度 (rad/s)
+ float32 duration             # 移动持续时间 (s) 
+ string ip_address            # 控制下位机的 IP 地址
+---
+# Result 部分 
+bool success 
+string message
+---
+# Feedback 部分 
+float32 distance_travelled # 已移动距离 (m)
