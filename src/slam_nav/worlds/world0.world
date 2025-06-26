@@ -1,0 +1,270 @@
+<?xml version="1.0" ?>
+<sdf version="1.9">
+  <world name="demo">
+    <!-- 启用物理引擎 -->
+    <plugin filename="gz-sim-physics-system" name="gz::sim::systems::Physics"></plugin>
+    <plugin filename="gz-sim-user-commands-system" name="gz::sim::systems::UserCommands"></plugin>
+    <!-- 启用场景广播 -->
+    <plugin filename="gz-sim-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster"></plugin>
+    <!-- 启用传感器系统并指定渲染引擎 -->
+    <plugin filename="gz-sim-sensors-system" name="gz::sim::systems::Sensors">
+      <render_engine>ogre2</render_engine>
+    </plugin>
+    <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu"></plugin>
+
+    <!-- 添加光源：点光源，位于房屋上方，白色光 -->
+    <light type="point" name="main_light">
+      <pose>0 0 5 0 0 0</pose> <!-- 位于z=5m，房屋上方 -->
+      <diffuse>1.0 1.0 1.0 1</diffuse> <!-- 白色光 -->
+      <specular>1.0 1.0 1.0 1</specular>
+      <attenuation>
+        <range>20</range> <!-- 光照范围20米 -->
+        <linear>0.1</linear>
+        <constant>0.9</constant>
+        <quadratic>0.01</quadratic>
+      </attenuation>
+      <cast_shadows>true</cast_shadows>
+    </light>
+
+    <!-- 地面平面：纯黑色 -->
+    <model name="ground_plane">
+      <static>true</static>
+      <link name="link">
+        <collision name="collision">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <plane>
+              <normal>0 0 1</normal>
+              <size>100 100</size>
+            </plane>
+          </geometry>
+          <material>
+            <!-- 纯黑色：RGB = (0.0, 0.0, 0.0) -->
+            <ambient>0.0 0.0 0.0 1</ambient>
+            <diffuse>0.0 0.0 0.0 1</diffuse>
+            <specular>0.0 0.0 0.0 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- 房子模型：两个连通的封闭房间，无房顶 -->
+    <model name="house">
+      <static>true</static>
+      <pose>0 0 0 0 0 0</pose>
+      <!-- 房间1：矩形区域（10m x 10m），黄色墙壁，高度3m -->
+      <!-- 房间1前墙 -->
+      <link name="room1_front_wall">
+        <pose>0 5 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>10 0.2 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>10 0.2 3</size>
+            </box>
+          </geometry>
+          <material>
+            <!-- 黄色：RGB = (1.0, 1.0, 0.0) -->
+            <ambient>1.0 1.0 0.0 1</ambient>
+            <diffuse>1.0 1.0 0.0 1</diffuse>
+            <specular>1.0 1.0 0.0 1</specular>
+          </material>
+        </visual>
+      </link>
+      <!-- 房间1后墙（带2米宽门洞，连接房间2） -->
+      <link name="room1_back_wall">
+        <pose>0 -5 1.5 0 0 0</pose>
+        <collision name="collision_left">
+          <pose>-3 0 0 0 0 0</pose> <!-- 左墙：x从-5到-1 -->
+          <geometry>
+            <box>
+              <size>4 0.2 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <collision name="collision_right">
+          <pose>3 0 0 0 0 0</pose> <!-- 右墙：x从1到5 -->
+          <geometry>
+            <box>
+              <size>4 0.2 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual_left">
+          <pose>-3 0 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>4 0.2 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1.0 1.0 0.0 1</ambient>
+            <diffuse>1.0 1.0 0.0 1</diffuse>
+            <specular>1.0 1.0 0.0 1</specular>
+          </material>
+        </visual>
+        <visual name="visual_right">
+          <pose>3 0 0 0 0 0</pose>
+          <geometry>
+            <box>
+              <size>4 0.2 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1.0 1.0 0.0 1</ambient>
+            <diffuse>1.0 1.0 0.0 1</diffuse>
+            <specular>1.0 1.0 0.0 1</specular>
+          </material>
+        </visual>
+      </link>
+      <!-- 房间1左墙 -->
+      <link name="room1_left_wall">
+        <pose>-5 0 1.5 0 0 1.5708</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>10 0.2 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>10 0.2 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1.0 1.0 0.0 1</ambient>
+            <diffuse>1.0 1.0 0.0 1</diffuse>
+            <specular>1.0 1.0 0.0 1</specular>
+          </material>
+        </visual>
+      </link>
+      <!-- 房间1右墙 -->
+      <link name="room1_right_wall">
+        <pose>5 0 1.5 0 0 1.5708</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>10 0.2 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>10 0.2 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1.0 1.0 0.0 1</ambient>
+            <diffuse>1.0 1.0 0.0 1</diffuse>
+            <specular>1.0 1.0 0.0 1</specular>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 房间2：矩形区域（8m x 6m），黄色墙壁，高度3m，位于房间1后方 -->
+      <!-- 房间2后墙 -->
+      <link name="room2_back_wall">
+        <pose>0 -11 1.5 0 0 0</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>8 0.2 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>8 0.2 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1.0 1.0 0.0 1</ambient>
+            <diffuse>1.0 1.0 0.0 1</diffuse>
+            <specular>1.0 1.0 0.0 1</specular>
+          </material>
+        </visual>
+      </link>
+      <!-- 房间2左墙 -->
+      <link name="room2_left_wall">
+        <pose>-4 -8 1.5 0 0 1.5708</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>6 0.2 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>6 0.2 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1.0 1.0 0.0 1</ambient>
+            <diffuse>1.0 1.0 0.0 1</diffuse>
+            <specular>1.0 1.0 0.0 1</specular>
+          </material>
+        </visual>
+      </link>
+      <!-- 房间2右墙 -->
+      <link name="room2_right_wall">
+        <pose>4 -8 1.5 0 0 1.5708</pose>
+        <collision name="collision">
+          <geometry>
+            <box>
+              <size>6 0.2 3</size>
+            </box>
+          </geometry>
+        </collision>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>6 0.2 3</size>
+            </box>
+          </geometry>
+          <material>
+            <ambient>1.0 1.0 0.0 1</ambient>
+            <diffuse>1.0 1.0 0.0 1</diffuse>
+            <specular>1.0 1.0 0.0 1</specular>
+          </material>
+        </visual>
+      </link>
+
+      <!-- 门洞标记：红色小立方体，位于门洞中心，便于视觉确认 -->
+      <link name="door_marker">
+        <pose>0 -5 0.1 0 0 0</pose>
+        <visual name="visual">
+          <geometry>
+            <box>
+              <size>0.2 0.2 0.2</size>
+            </box>
+          </geometry>
+          <material>
+            <!-- 红色：RGB = (1.0, 0.0, 0.0) -->
+            <ambient>1.0 0.0 0.0 1</ambient>
+            <diffuse>1.0 0.0 0.0 1</diffuse>
+            <specular>1.0 0.0 0.0 1</specular>
+          </material>
+        </visual>
+      </link>
+    </model>
+  </world>
+</sdf>
