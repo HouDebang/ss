@@ -58,23 +58,22 @@ class LD19LidarNode(Node):
             self.buffer += self.ser.read(512)
             while len(self.buffer) >= self.FRAME_SIZE:
                 # 查找帧头
-                if self.buffer[0] != self.PKG_HEADER or self.buffer[1] != self.PKG_VER_LEN:
-                    self.buffer.pop(0)
-                    continue
-                frame = self.buffer[:self.FRAME_SIZE]
-                self.buffer = self.buffer[self.FRAME_SIZE:]
-                # CRC校验
-                if self.calc_crc(frame) != frame[-1]:
-                    continue
-                # 解析数据帧
-                pkg = self.parse_frame(frame)
-                if pkg:
-                    self.one_circle.extend(pkg)
-                    # 检查是否转了一圈（角度回绕）
-                    if self.last_start_angle is not None and pkg[0]['angle'] < self.last_start_angle:
-                        self.publish_scan()
-                        self.one_circle = pkg
-                    self.last_start_angle = pkg[0]['angle']
+                if self.buffer[0] == self.PKG_HEADER and self.buffer[1] == self.PKG_VER_LEN:
+                    self.get_logger().info("找到帧头，准备解析一帧")
+                    frame = self.buffer[:self.FRAME_SIZE]
+                    self.buffer = self.buffer[self.FRAME_SIZE:]
+                    # CRC校验
+                    if self.calc_crc(frame) == frame[-1]:
+                        self.get_logger().info("CRC校验通过，解析帧数据")
+                        # 解析数据帧
+                        pkg = self.parse_frame(frame)
+                        if pkg:
+                            self.one_circle.extend(pkg)
+                            # 检查是否转了一圈（角度回绕）
+                            if self.last_start_angle is not None and pkg[0]['angle'] < self.last_start_angle:
+                                self.publish_scan()
+                                self.one_circle = pkg
+                            self.last_start_angle = pkg[0]['angle']
 
     def parse_frame(self, frame):
         # 结构参考官方协议
@@ -118,6 +117,7 @@ class LD19LidarNode(Node):
         scan.ranges = ranges
         scan.intensities = intensities
         self.scan_pub.publish(scan)
+        self.get_logger().info("发布一圈/scan")
 
     def cleanup(self):
         self.running = False
