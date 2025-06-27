@@ -39,7 +39,6 @@ setup(
             'chassis_control_clint= demo_python_service.chassis_control_client:main',
             'chassis_control_server= demo_python_service.chassis_control_server:main',
             'keyboard_control_node = demo_python_service.keyboard_control_node:main',
-            'chassis_cmdvel_node = demo_python_service.chassis_cmdvel_node:main',
         ],
     },
 )

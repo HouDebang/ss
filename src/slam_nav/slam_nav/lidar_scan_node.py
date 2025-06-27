@@ -22,6 +22,7 @@ class LidarScanNode(Node):
             rclpy.shutdown()
             return
         self.scan_pub = self.create_publisher(LaserScan, '/scan', 10)
+        self.get_logger().info(f"成功创建激光雷达发布者: /scan")
         self.running = True
         self.lidar_thread = threading.Thread(target=self.read_lidar)
         self.lidar_thread.daemon = True

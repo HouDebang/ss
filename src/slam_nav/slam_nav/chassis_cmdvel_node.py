@@ -137,7 +137,7 @@ class SerialController(Node):
         odom.twist.twist.linear.y = 0.0
         odom.twist.twist.angular.z = self.vth
         self.odom_pub.publish(odom)
-
+        self.get_logger().info(f"已发布里程计: {odom}") 
 def main(args=None):
     rclpy.init(args=args)
     node = SerialController()
