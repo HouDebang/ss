@@ -33,7 +33,7 @@ class LD19LidarNode(Node):
     def __init__(self):
         super().__init__('ld19_lidar_node')
         self.declare_parameter('port', '/dev/Lidar')
-        self.declare_parameter('baudrate', 230400)
+        self.declare_parameter('baudrate', 921600)
         port = self.get_parameter('port').value
         baudrate = self.get_parameter('baudrate').value
         self.ser = serial.Serial(port, baudrate, timeout=1)
