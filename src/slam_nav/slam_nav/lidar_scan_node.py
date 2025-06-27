@@ -11,7 +11,7 @@ class LidarScanNode(Node):
     def __init__(self):
         super().__init__('lidar_scan_node')
         self.declare_parameter('port', '/dev/Lidar')
-        self.declare_parameter('baudrate', 115200)
+        self.declare_parameter('baudrate', 230400)
         port = self.get_parameter('port').value
         baudrate = self.get_parameter('baudrate').value
         try:
