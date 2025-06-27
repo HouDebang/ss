@@ -9,6 +9,8 @@ from nav_msgs.msg import Odometry
 from geometry_msgs.msg import Quaternion
 import math
 import time
+from tf2_ros import TransformBroadcaster
+from geometry_msgs.msg import TransformStamped
 
 # 如果没有tf_transformations库，可以用以下函数将欧拉角转四元数：
 def euler_to_quaternion(yaw, pitch=0.0, roll=0.0):
@@ -67,6 +69,8 @@ class SerialController(Node):
         self.vth = 0.0
         # 里程计发布器
         self.odom_pub = self.create_publisher(Odometry, '/odom', 10)
+        # tf变换发布器
+        self.tf_broadcaster = TransformBroadcaster(self)
         # 定时器，定期发布odom
         self.odom_timer = self.create_timer(0.05, self.publish_odom)  # 20Hz
     
@@ -137,7 +141,19 @@ class SerialController(Node):
         odom.twist.twist.linear.y = 0.0
         odom.twist.twist.angular.z = self.vth
         self.odom_pub.publish(odom)
-        self.get_logger().info(f"已发布里程计: {odom}") 
+        self.get_logger().info(f"已发布里程计: {odom}")
+
+        # 发布tf变换（odom->base_link）
+        t = TransformStamped()
+        t.header.stamp = self.get_clock().now().to_msg()
+        t.header.frame_id = "odom"
+        t.child_frame_id = "base_link"
+        t.transform.translation.x = self.x
+        t.transform.translation.y = self.y
+        t.transform.translation.z = 0.0
+        t.transform.rotation = euler_to_quaternion(self.th)
+        self.tf_broadcaster.sendTransform(t)
+
 def main(args=None):
     rclpy.init(args=args)
     node = SerialController()

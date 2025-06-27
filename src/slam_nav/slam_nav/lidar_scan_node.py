@@ -43,7 +43,7 @@ class LidarScanNode(Node):
                 ranges = [float(x) if x else float('inf') for x in parts]
                 scan = LaserScan()
                 scan.header.stamp = self.get_clock().now().to_msg()
-                scan.header.frame_id = 'laser'
+                scan.header.frame_id = 'base_lidar_link'
                 scan.angle_min = 0.0
                 scan.angle_max = 2 * math.pi
                 scan.angle_increment = 2 * math.pi / 360
