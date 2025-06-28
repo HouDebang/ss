@@ -2,8 +2,7 @@
 <robot
   name="ugv_rover">
   <link name="base_footprint"></link>
-  <link
-    name="base_link">
+  <link name="base_link">
     <inertial>
       <origin
         xyz="-0.000460087791654118 -6.50856019576702E-10 -0.0147959620149623"

@@ -17,3 +17,13 @@ KERNEL=="ttyACM*",      ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3",ATTRS{
 KERNEL=="ttyACM*",      ATTRS{idVendor}=="1546", ATTRS{idProduct}=="01a9", MODE:="0777", GROUP:="dialout", SYMLINK+="wheeltec_gnss"
 KERNEL=="ttyUSB*",      ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60",ATTRS{serial}=="f8137c6862e4ee118e527c7d4c11a646", MODE:="0777", GROUP:="dialout", SYMLINK+="base_controller"
 KERNEL=="ttyUSB*",      ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60",ATTRS{serial}=="54d299285be4ee118d2e7c7d4c11a646", MODE:="0777", GROUP:="dialout", SYMLINK+="Lidar"
+source install/setup.bash
+ros2 run slam_nav keyboard_control_node 
+ros2 launch slam_nav bringup.launch.py 
+ros2 launch ldlidar stl27l.launch.py 
+ros2 launch slam_nav cartographer.launch.py 
+ros2 run nav2_map_server map_saver_cli -f ~/my_map
+ros2 topic echo /odom
+ros2 topic echo /cmd_vel
+ros2 topic echo /map
+ls /dev/ | grep tty
