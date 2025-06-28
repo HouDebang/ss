@@ -16,3 +16,4 @@ KERNEL=="ttyACM*",      ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d4",ATTRS{
 KERNEL=="ttyACM*",      ATTRS{idVendor}=="1a86", ATTRS{idProduct}=="55d3",ATTRS{serial}=="58A6069120", MODE:="0777", GROUP:="dialout", SYMLINK+="car_controller"
 KERNEL=="ttyACM*",      ATTRS{idVendor}=="1546", ATTRS{idProduct}=="01a9", MODE:="0777", GROUP:="dialout", SYMLINK+="wheeltec_gnss"
 KERNEL=="ttyUSB*",      ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60",ATTRS{serial}=="f8137c6862e4ee118e527c7d4c11a646", MODE:="0777", GROUP:="dialout", SYMLINK+="base_controller"
+KERNEL=="ttyUSB*",      ATTRS{idVendor}=="10c4", ATTRS{idProduct}=="ea60",ATTRS{serial}=="54d299285be4ee118d2e7c7d4c11a646", MODE:="0777", GROUP:="dialout", SYMLINK+="Lidar"
