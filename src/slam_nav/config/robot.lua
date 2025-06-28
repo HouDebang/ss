@@ -32,7 +32,7 @@ options = {
 
 MAP_BUILDER.use_trajectory_builder_2d = true
 
-TRAJECTORY_BUILDER_2D.use_imu_data = true      -- 启用 IMU 数据
+TRAJECTORY_BUILDER_2D.use_imu_data = false
 TRAJECTORY_BUILDER_2D.min_range = 0.1          -- 激光雷达最小距离（米）
 TRAJECTORY_BUILDER_2D.max_range = 20.0         -- 激光雷达最大距离（米）
 TRAJECTORY_BUILDER_2D.missing_data_ray_length = 5.0 -- 缺失数据射线长度
