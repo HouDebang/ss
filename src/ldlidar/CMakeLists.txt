@@ -34,30 +34,16 @@ endif()
 # Bin and Install
 include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/include
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../ldlidar_driver/include/core/
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../ldlidar_driver/include/dataprocess/
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../ldlidar_driver/include/filter/
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../ldlidar_driver/include/logger/
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../ldlidar_driver/include/networkcom/
-  ${CMAKE_CURRENT_SOURCE_DIR}/../../../ldlidar_driver/include/serialcom/
 )
 
-file(GLOB  LDLIDAR_DRI_CORE ${CMAKE_CURRENT_SOURCE_DIR}/../../../ldlidar_driver/src/core/*.cpp)
-file(GLOB  LDLIDAR_DRI_DATARPC ${CMAKE_CURRENT_SOURCE_DIR}/../../../ldlidar_driver/src/dataprocess/*.cpp)
-file(GLOB  LDLIDAR_DRI_FILTER ${CMAKE_CURRENT_SOURCE_DIR}/../../../ldlidar_driver/src/filter/*.cpp)
-file(GLOB  LDLIDAR_DRI_LOGGER ${CMAKE_CURRENT_SOURCE_DIR}/../../../ldlidar_driver/src/logger/*.cpp)
-file(GLOB  LDLIDAR_DRI_NETWORK ${CMAKE_CURRENT_SOURCE_DIR}/../../../ldlidar_driver/src/networkcom/*.cpp)
-file(GLOB  LDLIDAR_DRI_SERIAL ${CMAKE_CURRENT_SOURCE_DIR}/../../../ldlidar_driver/src/serialcom/*.cpp)
+# 添加ldlidar_driver的源文件（递归包含所有.cpp文件）
+file(GLOB_RECURSE LDLIDAR_DRI_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/driver/*.cpp)
+file(GLOB MAIN_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/ros2_node/*.cpp)
 
-file(GLOB  MAIN_SRC ${CMAKE_CURRENT_SOURCE_DIR}/src/ros2_node/*.cpp)
 add_executable(${PROJECT_NAME}  
 ${MAIN_SRC} 
-${LDLIDAR_DRI_CORE} 
-${LDLIDAR_DRI_DATARPC} 
-${LDLIDAR_DRI_FILTER} 
-${LDLIDAR_DRI_LOGGER} 
-${LDLIDAR_DRI_NETWORK} 
-${LDLIDAR_DRI_SERIAL})
+${LDLIDAR_DRI_SRC})
+
 ament_target_dependencies(${PROJECT_NAME} rclcpp sensor_msgs)
 target_link_libraries(${PROJECT_NAME} pthread)
 
