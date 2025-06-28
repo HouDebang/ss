@@ -9,13 +9,12 @@ def generate_launch_description():
         robot_description = inf.read()
 
     return LaunchDescription([
-        # 启动雷达节点
+        # 启动键盘控制节点
         Node(
             package='slam_nav',
-            executable='lidar_scan_node',
-            name='lidar_scan_node',
-            output='screen',
-            parameters=[{'port': '/dev/Lidar', 'baudrate': 115200}]
+            executable='keyboard_control_node',
+            name='keyboard_control_node',
+            output='screen'
         ),
         # 启动小车底盘节点
         Node(
@@ -32,5 +31,12 @@ def generate_launch_description():
             name='robot_state_publisher',
             output='screen',
             parameters=[{'robot_description': robot_description}]
+        ),
+        # 启动joint_state_publisher
+        Node(
+            package='joint_state_publisher',
+            executable='joint_state_publisher',
+            name='joint_state_publisher',
+            output='screen'
         ),
     ])
