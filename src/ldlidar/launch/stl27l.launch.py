@@ -36,7 +36,7 @@ def generate_launch_description():
       parameters=[
         {'product_name': 'LDLiDAR_STL27L'},
         {'topic_name': 'scan'},
-        {'frame_id': 'base_laser'},
+        {'frame_id': 'base_lidar_link'},
         {'enable_serial_or_network_communication': True},
         {'port_name': '/dev/Lidar'},
         {'port_baudrate': 921600},
