@@ -30,8 +30,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'chassis_cmdvel_node = demo_python_service.chassis_cmdvel_node:main',
-            'lidar_scan_node = demo_python_service.lidar_scan_node:main',
+            'keyboard_control_node = slam_nav.keyboard_control_node:main',
+            'chassis_cmdvel_node = slam_nav.chassis_cmdvel_node:main',
         ],
     },
 )

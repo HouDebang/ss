@@ -9,13 +9,7 @@ def generate_launch_description():
         robot_description = inf.read()
 
     return LaunchDescription([
-        # 启动键盘控制节点
-        Node(
-            package='slam_nav',
-            executable='keyboard_control_node',
-            name='keyboard_control_node',
-            output='screen'
-        ),
+
         # 启动小车底盘节点
         Node(
             package='slam_nav',
