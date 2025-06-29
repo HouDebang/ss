@@ -25,6 +25,7 @@ ros2 launch slam_nav cartographer.launch.py
 ros2 run nav2_map_server map_saver_cli -f ~/my_map
 ros2 topic echo /odom
 ros2 topic echo /cmd_vel
-ros2 topic echo /map
+ros2 topic echo /map --once
+ros2 topic echo /scan --once
 ls /dev/ | grep ttyUSB
 ros2 topic echo /tf_static --once
