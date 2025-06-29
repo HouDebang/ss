@@ -14,7 +14,7 @@ def generate_launch_description():
             name='cartographer_node',
             output='screen',
             arguments=['-configuration_directory', config_dir, '-configuration_basename', 'robot.lua'],
-            parameters=[{'use_sim_time': True}]  # 啟用仿真時間
+            parameters=[{'use_sim_time': False}]  # 使用真实时间，不是仿真时间
         ),
         Node(
             package='cartographer_ros',
@@ -22,6 +22,6 @@ def generate_launch_description():
             name='cartographer_occupancy_grid_node',
             output='screen',
             arguments=['-resolution', '0.05', '-publish_period_sec', '1.0'],
-            parameters=[{'use_sim_time': True}]  # 啟用仿真時間
+            parameters=[{'use_sim_time': False}]  # 使用真实时间
         )
     ])

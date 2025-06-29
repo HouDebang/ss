@@ -5,10 +5,10 @@ options = {
   map_builder = MAP_BUILDER,
   trajectory_builder = TRAJECTORY_BUILDER,
   map_frame = "map",              -- 地图坐标系
-  tracking_frame = "base_link",   -- 机器人基座坐标系，IMU 和激光雷达位于此框架
-  published_frame = "base_link",  -- 发布的位姿坐标系，与基座一致
-  odom_frame = "odom",            -- 里程计坐标系（未使用，因 provide_odom_frame = false）
-  provide_odom_frame = false,     -- 不提供 odom 坐标系，依赖 Cartographer 的内部位姿
+  tracking_frame = "base_footprint",   -- 机器人基座坐标系，跟踪 base_footprint
+  published_frame = "base_footprint",  -- 发布的位姿坐标系，发布到 base_footprint
+  odom_frame = "odom",            -- 里程计坐标系
+  provide_odom_frame = true,     -- 提供 odom 坐标系，让 Cartographer 发布 map->odom 变换
   publish_frame_projected_to_2d = false, -- 不限制为 2D 位姿
   use_odometry = false,           -- 不使用外部里程计数据
   use_nav_sat = false,            -- 不使用 GPS 数据
