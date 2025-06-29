@@ -36,7 +36,7 @@ def generate_launch_description():
       parameters=[
         {'product_name': 'LDLiDAR_STL26'},
         {'topic_name': 'scan'},
-        {'frame_id': 'base_laser'},
+        {'frame_id': 'base_lidar_link'},
         {'enable_serial_or_network_communication': True},
         {'port_name': '/dev/ttyUSB0'},
         {'port_baudrate': 230400},
@@ -46,16 +46,16 @@ def generate_launch_description():
         {'enable_angle_crop_func': False},
         {'angle_crop_min': 135.0},
         {'angle_crop_max': 225.0},
-        {'measure_point_freq': 5000}
+        {'measure_point_freq': 4500}
       ]
   )
 
-  # base_link to base_laser tf node
+  # base_link to base_lidar_link tf node
   base_link_to_laser_tf_node = Node(
     package='tf2_ros',
     executable='static_transform_publisher',
-    name='base_link_to_base_laser_stl26',
-    arguments=['0','0','0.18','0','0','0','base_link','base_laser']
+    name='base_link_to_base_lidar_link_stl26',
+    arguments=['0','0','0.18','0','0','0','base_link','base_lidar_link']
   )
 
 
