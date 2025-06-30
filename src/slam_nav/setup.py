@@ -32,6 +32,7 @@ setup(
         'console_scripts': [
             'keyboard_control_node = slam_nav.keyboard_control_node:main',
             'chassis_cmdvel_node = slam_nav.chassis_cmdvel_node:main',
+            'imu_node = slam_nav.imu_node:main',
         ],
     },
 )
