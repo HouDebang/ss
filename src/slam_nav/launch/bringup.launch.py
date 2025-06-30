@@ -18,6 +18,14 @@ def generate_launch_description():
             output='screen',
             parameters=[{'port': '/dev/car_controller', 'baudrate': 115200}]
         ),
+        # 启动IMU节点
+        Node(
+            package='slam_nav',
+            executable='imu_node',
+            name='imu_node',
+            output='screen',
+            parameters=[{'port': '/dev/car_controller', 'baudrate': 115200}]
+        ),
         # 启动robot_state_publisher
         Node(
             package='robot_state_publisher',
