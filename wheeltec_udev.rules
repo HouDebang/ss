@@ -29,5 +29,5 @@ ros2 topic echo /map --once
 ros2 topic echo /scan --once
 ls /dev/ | grep ttyUSB
 ros2 topic echo /tf_static --once
-ros2 topic echo /odom | grep stamp
-ros2 topic echo /scan | grep stamp
+ros2 run tf2_tools view_frames
+ros2 topic hz /tf

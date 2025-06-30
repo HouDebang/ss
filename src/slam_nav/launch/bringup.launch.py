@@ -31,13 +31,7 @@ def generate_launch_description():
             package='joint_state_publisher',
             executable='joint_state_publisher',
             name='joint_state_publisher',
+            parameters=[{'rate': 20}], 
             output='screen'
-        ),
-        # 手动发布 base_footprint 到 base_link 的静态变换
-        Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            name='base_footprint_to_base_link',
-            arguments=['0', '0', '0.08', '0', '0', '0', 'base_footprint', 'base_link']
         ),
     ])
