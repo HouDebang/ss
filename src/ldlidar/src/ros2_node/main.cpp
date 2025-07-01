@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
   bool enable_serial_or_network_communication;
   ldlidar::LDType type_name;
   LaserScanSetting setting;
-	setting.frame_id = "base_lidar_link";
+	setting.frame_id = "base_laser";
   setting.laser_scan_dir = true;
   setting.enable_angle_crop_func = false;
   setting.angle_crop_min = 0.0;
