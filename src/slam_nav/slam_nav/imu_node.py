@@ -51,18 +51,18 @@ class ImuNode(Node):
 
             # T=1001: 加速度/角速度
             if data.get('T') == 1001:
-                imu_msg.linear_acceleration.x = float(data.get('ax', 0.0))
-                imu_msg.linear_acceleration.y = float(data.get('ay', 0.0))
-                imu_msg.linear_acceleration.z = float(data.get('az', 0.0))
-                imu_msg.angular_velocity.x = float(data.get('gx', 0.0))
-                imu_msg.angular_velocity.y = float(data.get('gy', 0.0))
-                imu_msg.angular_velocity.z = float(data.get('gz', 0.0))
+                imu_msg.linear_acceleration.x = float(data.get('ax', 0.0) or 0.0)
+                imu_msg.linear_acceleration.y = float(data.get('ay', 0.0) or 0.0)
+                imu_msg.linear_acceleration.z = float(data.get('az', 0.0) or 0.0)
+                imu_msg.angular_velocity.x = float(data.get('gx', 0.0) or 0.0)
+                imu_msg.angular_velocity.y = float(data.get('gy', 0.0) or 0.0)
+                imu_msg.angular_velocity.z = float(data.get('gz', 0.0) or 0.0)
             # T=1002: 四元数
             elif data.get('T') == 1002:
-                imu_msg.orientation.x = float(data.get('q1', 0.0))
-                imu_msg.orientation.y = float(data.get('q2', 0.0))
-                imu_msg.orientation.z = float(data.get('q3', 0.0))
-                imu_msg.orientation.w = float(data.get('q0', 1.0))
+                imu_msg.orientation.x = float(data.get('q1', 0.0) or 0.0)
+                imu_msg.orientation.y = float(data.get('q2', 0.0) or 0.0)
+                imu_msg.orientation.z = float(data.get('q3', 0.0) or 0.0)
+                imu_msg.orientation.w = float(data.get('q0', 1.0) or 1.0)
             else:
                 return
 
