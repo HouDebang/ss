@@ -73,7 +73,7 @@ class ImuNode(Node):
     def publish_imu_tf(self):
         t = TransformStamped()
         t.header.stamp = self.get_clock().now().to_msg()
-        t.header.frame_id = "base_footprint"
+        t.header.frame_id = "base_link"  # 发布的坐标系
         t.child_frame_id = "base_imu_link"
         t.transform.translation.x = 0.0  # 如有实际偏移请填写
         t.transform.translation.y = 0.0

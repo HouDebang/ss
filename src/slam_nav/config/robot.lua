@@ -6,7 +6,7 @@ options = {
   trajectory_builder = TRAJECTORY_BUILDER,
   map_frame = "map",              -- 地图坐标系
   tracking_frame = "base_footprint",       -- 机器人跟踪坐标系
-  published_frame = "base_link", -- 发布的坐标系（通常是底盘坐标系）
+  published_frame = "base_footprint", -- 发布的坐标系（通常是底盘坐标系）
   odom_frame = "odom",            -- 里程计坐标系
   provide_odom_frame = true,     -- 提供 odom 坐标系，让 Cartographer 发布 map->odom 变换
   publish_frame_projected_to_2d = false, -- 不限制为 2D 位姿
@@ -32,7 +32,7 @@ options = {
 
 MAP_BUILDER.use_trajectory_builder_2d = true
 
-TRAJECTORY_BUILDER_2D.use_imu_data = flase
+TRAJECTORY_BUILDER_2D.use_imu_data = false -- 不使用 IMU 数据
 TRAJECTORY_BUILDER_2D.min_range = 0.1          -- 激光雷达最小距离（米）
 TRAJECTORY_BUILDER_2D.max_range = 20.0         -- 激光雷达最大距离（米）
 TRAJECTORY_BUILDER_2D.missing_data_ray_length = 5.0 -- 缺失数据射线长度
