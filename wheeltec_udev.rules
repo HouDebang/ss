@@ -22,6 +22,7 @@ ros2 run slam_nav keyboard_control_node
 ros2 launch slam_nav bringup.launch.py 
 ros2 launch ldlidar stl27l.launch.py 
 ros2 launch slam_nav cartographer.launch.py 
+ros2 run slam_nav imu_node
 ros2 run nav2_map_server map_saver_cli -f ~/my_map
 ros2 topic echo /odom
 ros2 topic echo /cmd_vel
