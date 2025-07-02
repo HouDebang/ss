@@ -34,6 +34,7 @@ def generate_launch_description():
       name='STL27L',
       output='screen',
       parameters=[
+        {'use_sim_time': False},
         {'product_name': 'LDLiDAR_STL27L'},
         {'topic_name': 'scan'},
         {'frame_id': 'base_laser'},
