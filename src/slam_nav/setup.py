@@ -33,6 +33,7 @@ setup(
             'keyboard_control_node = slam_nav.keyboard_control_node:main',
             'chassis_cmdvel_node = slam_nav.chassis_cmdvel_node:main',
             'imu_node = slam_nav.imu_node:main',
+            'sync_tf_node = slam_nav.sync_tf_node:main',
         ],
     },
 )
