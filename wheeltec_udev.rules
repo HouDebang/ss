@@ -32,3 +32,4 @@ ls /dev/ | grep ttyUSB
 ros2 topic echo /tf_static --once
 ros2 run tf2_tools view_frames
 ros2 topic hz /tf
+ros2 topic list
