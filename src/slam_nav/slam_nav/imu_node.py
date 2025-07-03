@@ -23,8 +23,8 @@ class ImuNode(Node):
             return
         self.imu_pub = self.create_publisher(Imu, '/imu', 10)
         self.timer = self.create_timer(0.05, self.get_and_publish_imu)  # 20Hz
-        self.tf_broadcaster = TransformBroadcaster(self)
-        self.tf_timer = self.create_timer(0.1, self.publish_imu_tf)  # 10Hz
+        # self.tf_broadcaster = TransformBroadcaster(self)
+        # self.tf_timer = self.create_timer(0.1, self.publish_imu_tf)  # 10Hz
 
     def get_and_publish_imu(self):
         try:
@@ -33,12 +33,15 @@ class ImuNode(Node):
             if not line:
                 return
             self.get_logger().info(f"串口原始数据: {line}")
+            # 只处理以 { 开头的内容
+            if not line.startswith('{'):
+                return
             try:
                 data = json.loads(line)
             except Exception as e:
                 self.get_logger().warn(f"IMU数据解析失败: {e}")
                 return
-
+      
             imu_msg = Imu()
             imu_msg.header.stamp = self.get_clock().now().to_msg()
             imu_msg.header.frame_id = "base_imu_link"  
@@ -67,22 +70,23 @@ class ImuNode(Node):
                 return
 
             self.imu_pub.publish(imu_msg)
+            self.get_logger().info(f"已发布IMU数据: {imu_msg}")
         except Exception as e:
             self.get_logger().warn(f"IMU数据解析失败: {e}")
 
-    def publish_imu_tf(self):
-        t = TransformStamped()
-        t.header.stamp = self.get_clock().now().to_msg()
-        t.header.frame_id = "base_link"  # 发布的坐标系
-        t.child_frame_id = "base_imu_link"
-        t.transform.translation.x = 0.0  # 如有实际偏移请填写
-        t.transform.translation.y = 0.0
-        t.transform.translation.z = 0.0
-        t.transform.rotation.x = 0.0
-        t.transform.rotation.y = 0.0
-        t.transform.rotation.z = 0.0
-        t.transform.rotation.w = 1.0
-        self.tf_broadcaster.sendTransform(t)
+    # def publish_imu_tf(self):
+    #     t = TransformStamped()
+    #     t.header.stamp = self.get_clock().now().to_msg()
+    #     t.header.frame_id = "base_link"  # 发布的坐标系
+    #     t.child_frame_id = "base_imu_link"
+    #     t.transform.translation.x = 0.0  # 如有实际偏移请填写
+    #     t.transform.translation.y = 0.0
+    #     t.transform.translation.z = 0.0
+    #     t.transform.rotation.x = 0.0
+    #     t.transform.rotation.y = 0.0
+    #     t.transform.rotation.z = 0.0
+    #     t.transform.rotation.w = 1.0
+    #     self.tf_broadcaster.sendTransform(t)
 
 def main(args=None):
     rclpy.init(args=args)
