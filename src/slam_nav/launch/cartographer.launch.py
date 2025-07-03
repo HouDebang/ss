@@ -14,7 +14,10 @@ def generate_launch_description():
             name='cartographer_node',
             output='screen',
             arguments=['-configuration_directory', config_dir, '-configuration_basename', 'robot.lua'],
-            parameters=[{'use_sim_time': False}]  # 使用真实时间，不是仿真时间
+            parameters=[{'use_sim_time': False}],
+            remappings=[
+                ('/odom', '/odometry/filtered')
+            ]
         ),
         Node(
             package='cartographer_ros',

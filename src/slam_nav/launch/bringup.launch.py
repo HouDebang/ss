@@ -42,4 +42,12 @@ def generate_launch_description():
             parameters=[{'rate': 10}], 
             output='screen'
         ),
+        # 启动robot_localization ekf_node
+        Node(
+            package='robot_localization',
+            executable='ekf_node',
+            name='ekf_filter_node',
+            output='screen',
+            parameters=[os.path.join(pkg_share, 'config', 'ekf.yaml')]
+        ),
     ])
