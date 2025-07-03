@@ -143,16 +143,16 @@ class SerialController(Node):
         self.odom_pub.publish(odom)
         self.get_logger().info(f"已发布里程计: {odom}")
 
-        # 发布tf变换（odom->base_footprint）
-        t = TransformStamped()
-        t.header.stamp = self.get_clock().now().to_msg()
-        t.header.frame_id = "odom"
-        t.child_frame_id = "base_footprint"
-        t.transform.translation.x = self.x
-        t.transform.translation.y = self.y
-        t.transform.translation.z = 0.0
-        t.transform.rotation = euler_to_quaternion(self.th)
-        self.tf_broadcaster.sendTransform(t)
+        # # 发布tf变换（odom->base_footprint）
+        # t = TransformStamped()
+        # t.header.stamp = self.get_clock().now().to_msg()
+        # t.header.frame_id = "odom"
+        # t.child_frame_id = "base_footprint"
+        # t.transform.translation.x = self.x
+        # t.transform.translation.y = self.y
+        # t.transform.translation.z = 0.0
+        # t.transform.rotation = euler_to_quaternion(self.th)
+        # self.tf_broadcaster.sendTransform(t)
 
 def main(args=None):
     rclpy.init(args=args)

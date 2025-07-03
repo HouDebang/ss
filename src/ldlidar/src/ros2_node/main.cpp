@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
   rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr publisher = 
       node->create_publisher<sensor_msgs::msg::LaserScan>(topic_name, 10);
   
-  rclcpp::WallRate r(20); //10hz
+  rclcpp::WallRate r(10); //10hz
 
   ldlidar::Points2D laser_scan_points;
   double lidar_spin_freq;
