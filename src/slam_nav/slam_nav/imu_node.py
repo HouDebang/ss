@@ -6,7 +6,6 @@ import json
 import math
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
-from builtin_interfaces.msg import Time
 
 class ImuNode(Node):
     def __init__(self):
@@ -43,7 +42,7 @@ class ImuNode(Node):
                 return
 
             imu_msg = Imu()
-            imu_msg.header.stamp = Time(sec=0, nanosec=0)
+            imu_msg.header.stamp = self.get_clock().now().to_msg()
             imu_msg.header.frame_id = "base_imu_link"
 
             # 默认值
