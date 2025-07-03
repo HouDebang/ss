@@ -32,19 +32,18 @@ class ImuNode(Node):
             line = self.ser.readline().decode('utf-8', errors='ignore').strip()
             if not line:
                 return
-            self.get_logger().info(f"串口原始数据: {line}")
-            # 只处理以 { 开头的内容
-            if not line.startswith('{'):
+            # 只处理以 { 开头且以 } 结尾的内容
+            if not (line.startswith('{') and line.endswith('}')):
                 return
             try:
                 data = json.loads(line)
             except Exception as e:
-                self.get_logger().warn(f"IMU数据解析失败: {e}")
+                self.get_logger().warn(f"IMU数据解析失败: {e}，原始数据: {line}")
                 return
-      
+
             imu_msg = Imu()
             imu_msg.header.stamp = self.get_clock().now().to_msg()
-            imu_msg.header.frame_id = "base_imu_link"  
+            imu_msg.header.frame_id = "base_imu_link"
 
             # 默认值
             imu_msg.orientation.x = 0.0
