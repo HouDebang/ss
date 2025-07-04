@@ -285,8 +285,8 @@ void  ToLaserscanMessagePublish(ldlidar::Points2D& src,  double lidar_spin_freq,
     }
     geometry_msgs::msg::TransformStamped t;
     t.header.stamp = output.header.stamp;
-    t.header.frame_id = "base_link";
-    t.child_frame_id = setting.frame_id; // 通常为 base_laser
+    t.header.frame_id = setting.frame_id; // base_laser
+    t.child_frame_id = "map";
     t.transform.translation.x = 0.0;
     t.transform.translation.y = 0.0;
     t.transform.translation.z = 0.0;
