@@ -21,6 +21,7 @@ find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -49,6 +50,7 @@ ${LDLIDAR_DRI_SRC})
 ament_target_dependencies(ldlidar
   rclcpp
   sensor_msgs
+  tf2
   tf2_ros
   geometry_msgs
 )
