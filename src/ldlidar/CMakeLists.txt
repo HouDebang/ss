@@ -19,6 +19,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -44,7 +46,12 @@ add_executable(${PROJECT_NAME}
 ${MAIN_SRC} 
 ${LDLIDAR_DRI_SRC})
 
-ament_target_dependencies(${PROJECT_NAME} rclcpp sensor_msgs)
+ament_target_dependencies(ldlidar
+  rclcpp
+  sensor_msgs
+  tf2_ros
+  geometry_msgs
+)
 target_link_libraries(${PROJECT_NAME} pthread)
 
 install(TARGETS  ${PROJECT_NAME}
