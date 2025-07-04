@@ -68,12 +68,12 @@ class SerialController(Node):
         self.vx = 0.0
         self.vth = 0.0
         # 里程计发布器
-        self.odom_pub = self.create_publisher(Odometry, '/odom', 10)
+        self.odom_pub = self.create_publisher(Odometry, '/odom', 50)
         # tf变换发布器
         self.tf_broadcaster = TransformBroadcaster(self)
         # 定时器，定期发布odom
-        self.odom_timer = self.create_timer(0.05, self.publish_odom)  # 20Hz
-    
+        self.odom_timer = self.create_timer(0.02, self.publish_odom)  # 50Hz
+
     def cmd_vel_callback(self, msg):
         """处理速度指令消息"""
         # 差速模型转换，左右轮速度，单位m/s，范围-0.5~0.5

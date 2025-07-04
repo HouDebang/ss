@@ -141,8 +141,8 @@ int main(int argc, char **argv) {
   // create ldlidar data topic and publisher
   rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr publisher = 
       node->create_publisher<sensor_msgs::msg::LaserScan>(topic_name, 10);
-  
-  rclcpp::WallRate r(20); //10hz
+
+  rclcpp::WallRate r(40); //40hz
 
   ldlidar::Points2D laser_scan_points;
   double lidar_spin_freq;
@@ -209,7 +209,7 @@ void  ToLaserscanMessagePublish(ldlidar::Points2D& src,  double lidar_spin_freq,
   // Calculate the number of scanning points
   if (lidar_spin_freq > 0) {
     sensor_msgs::msg::LaserScan output;
-    output.header.stamp = start_scan_time - rclcpp::Duration::from_seconds(0.05); // 推荐减去50ms
+    output.header.stamp = start_scan_time
     output.header.frame_id = setting.frame_id;
     output.angle_min = angle_min;
     output.angle_max = angle_max;
