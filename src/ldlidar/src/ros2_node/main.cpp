@@ -21,6 +21,8 @@
 
 #include "ros2_api.h"
 #include "ldlidar_driver.h"
+#include <tf2_ros/transform_broadcaster.h>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 
 void  ToLaserscanMessagePublish(ldlidar::Points2D& src, double lidar_spin_freq, LaserScanSetting& setting,
   rclcpp::Node::SharedPtr& node, rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr& lidarpub);
@@ -206,7 +208,7 @@ void  ToLaserscanMessagePublish(ldlidar::Points2D& src,  double lidar_spin_freq,
   // Calculate the number of scanning points
   if (lidar_spin_freq > 0) {
     sensor_msgs::msg::LaserScan output;
-    output.header.stamp = start_scan_time + rclcpp::Duration::from_seconds(0.05); // 50ms
+    output.header.stamp = start_scan_time - rclcpp::Duration::from_seconds(0.05); // 推荐减去50ms
     output.header.frame_id = setting.frame_id;
     output.angle_min = angle_min;
     output.angle_max = angle_max;
@@ -275,6 +277,25 @@ void  ToLaserscanMessagePublish(ldlidar::Points2D& src,  double lidar_spin_freq,
     }
     lidarpub->publish(output);
     end_scan_time = start_scan_time;
+
+    // --- 新增：发布 base_link -> base_laser 的 tf 变换 ---
+    static std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster = nullptr;
+    if (!tf_broadcaster) {
+      tf_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(node);
+    }
+    geometry_msgs::msg::TransformStamped t;
+    t.header.stamp = output.header.stamp;
+    t.header.frame_id = "base_link";
+    t.child_frame_id = setting.frame_id; // 通常为 base_laser
+    t.transform.translation.x = 0.0;
+    t.transform.translation.y = 0.0;
+    t.transform.translation.z = 0.0;
+    t.transform.rotation.x = 0.0;
+    t.transform.rotation.y = 0.0;
+    t.transform.rotation.z = 0.0;
+    t.transform.rotation.w = 1.0;
+    tf_broadcaster->sendTransform(t);
+    // --- tf发布结束 ---
   } 
 }
 
