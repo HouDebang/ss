@@ -209,7 +209,7 @@ void  ToLaserscanMessagePublish(ldlidar::Points2D& src,  double lidar_spin_freq,
   // Calculate the number of scanning points
   if (lidar_spin_freq > 0) {
     sensor_msgs::msg::LaserScan output;
-    output.header.stamp = start_scan_time;
+    output.header.stamp = start_scan_time;//-rclcpp::Duration::from_seconds(0.112896);
     output.header.frame_id = setting.frame_id;
     output.angle_min = angle_min;
     output.angle_max = angle_max;
@@ -279,26 +279,26 @@ void  ToLaserscanMessagePublish(ldlidar::Points2D& src,  double lidar_spin_freq,
     lidarpub->publish(output);
     end_scan_time = start_scan_time;
 
-    // --- 新增：发布 base_link -> base_laser 的 tf 变换 ---
-    static std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster = nullptr;
-    if (!tf_broadcaster) {
-      tf_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(node);
-    }
-    geometry_msgs::msg::TransformStamped t;
-    t.header.stamp = output.header.stamp;
-    t.header.frame_id = "base_link";
-    t.child_frame_id = "base_laser";
-    t.transform.translation.x = -0.0398145505519817;
-    t.transform.translation.y = 0.0;
-    t.transform.translation.z = -0.04;
-    tf2::Quaternion q;
-    q.setRPY(0, 0, -1.5708);
-    t.transform.rotation.x = q.x();
-    t.transform.rotation.y = q.y();
-    t.transform.rotation.z = q.z();
-    t.transform.rotation.w = q.w();
-    tf_broadcaster->sendTransform(t);
-    // --- tf发布结束 ---
+    // // --- 新增：发布 base_link -> base_laser 的 tf 变换 ---
+    // static std::shared_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster = nullptr;
+    // if (!tf_broadcaster) {
+    //   tf_broadcaster = std::make_shared<tf2_ros::TransformBroadcaster>(node);
+    // }
+    // geometry_msgs::msg::TransformStamped t;
+    // t.header.stamp = output.header.stamp;
+    // t.header.frame_id = "base_link";
+    // t.child_frame_id = "base_laser";
+    // t.transform.translation.x = -0.0398145505519817;
+    // t.transform.translation.y = 0.0;
+    // t.transform.translation.z = -0.04;
+    // tf2::Quaternion q;
+    // q.setRPY(0, 0, -1.5708);
+    // t.transform.rotation.x = q.x();
+    // t.transform.rotation.y = q.y();
+    // t.transform.rotation.z = q.z();
+    // t.transform.rotation.w = q.w();
+    // tf_broadcaster->sendTransform(t);
+    // // --- tf发布结束 ---
   } 
 }
 
