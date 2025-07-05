@@ -68,7 +68,7 @@ class SerialController(Node):
         self.vx = 0.0
         self.vth = 0.0
         # 里程计发布器
-        self.odom_pub = self.create_publisher(Odometry, '/odom', 50)
+        self.odom_pub = self.create_publisher(Odometry, '/odom', 20)
         # tf变换发布器
         self.tf_broadcaster = TransformBroadcaster(self)
         # 定时器，定期发布odom
